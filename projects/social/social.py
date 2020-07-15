@@ -1,3 +1,6 @@
+from util import Stack, Queue
+import random
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -45,8 +48,25 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        # for every user in the range of num_users
+        for user in range(num_users):
+            # call add_user passing in user
+            self.add_user(f'user{user}')
 
         # Create friendships
+        possible_friendships = []
+
+        for user_id in self.users:
+            for friend_id in range(user_id + 1, self.last_id + 1):
+                possible_friendships.append((user_id, friend_id))
+
+        # shuffle
+        random.shuffle(possible_friendships)
+
+        # divide by 2
+        for i in range(num_users * avg_friendships // 2):
+            friendship = possible_friendships[i]
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,8 +77,34 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        # create a dictionary
+        visited = {}
+        # create a Queue
+        q = Queue()
+        # enqueue the user_id
+        q.enqueue([user_id])
+
+        # while there is a user 
+        while q.size() > 0:
+            # create path and assign it to be the  dequeue of the user ids 
+            path = q.dequeue()
+            # create friend and make it path[-1] so the end of the path
+            friend = path[-1]
+
+            # if our friend is not in visited
+            if friend not in visited:
+                # add friend to visited and a value of path
+                visited[friend] = path
+                # print(self.friendships[friend], 'friend')
+                # loop over neighbors in our friendship[friend] so neighbors of our friends
+                for neighbor in self.friendships[friend]:
+                    # for each neighbor make a copy of the path
+                    path_copy = path.copy()
+                    # append the neighbor to the path copy
+                    path_copy.append(neighbor)
+                    # enqueue that path copy
+                    q.enqueue(path_copy)
+
         return visited
 
 
